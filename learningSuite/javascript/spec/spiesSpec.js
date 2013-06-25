@@ -55,7 +55,7 @@ describe('Spy Class Constructor', function () {
 // Spies can be very useful for testing AJAX or other asynchronous
  // behaviors that take callbacks by faking the method firing an async call.
 describe( "Async Spies", function () {
-   it('should test async call', function () {
+  it('should test async call', function () {
     spyOn(Klass, 'asyncMethod');
     var callback = jasmine.createSpy();
 
@@ -69,7 +69,7 @@ describe( "Async Spies", function () {
 });
 
 // spy on console
-describe( "Spy on console", function () {
+describe( "Spies on methods and libraries", function () {
   it( "should watch calls to console", function () {
     var mySpy = spyOn(console, 'log');
     console.log("test1");
@@ -78,6 +78,34 @@ describe( "Spy on console", function () {
 
     expect(mySpy.callCount).toEqual(3);
   });
+
+  it( "should watch calls to Math.random", function () {
+    spyOn(Math, 'random');
+    var proxy = Math.random();
+
+    expect(Math.random).toHaveBeenCalled;
+  });
 });
 
+describe( "Stubbing with sinon", function () {
+  it( "should set a fake return value for Math.floor(num)", function () {
+    // Stub out Math.random so it always returns '4' (chosen by fair dice roll)
+    sinon.stub(Math, 'floor').returns(3);
+    // Double check that it worked.
+    expect(Math.floor(57.9)).toEqual(3);
+  });
+});
+
+describe( "Mocking with sinon", function () {
+  it( "should capture the method call of Math.random()", function () {
+    var mock = sinon.mock(Math);
+  mock.expects("random").returns(42);
+
+  var proxy = Math.random();
+
+  expect(proxy).toEqual(42);
+  mock.verify();
+  });
+
+});
 
