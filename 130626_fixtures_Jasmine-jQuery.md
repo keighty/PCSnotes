@@ -1,6 +1,6 @@
 # Creating a fixture using Jasmine-jQuery
 
-why did we have cross-domain browser barfing?
+Loading files locally causes a cross-domain browser request error. Ajax is entirely disabled locally, so the `file://` will not work. This is why when testing the addition of fixtures, you must run it within the context of an http server (for example rails).
 
 1. make a rails project and clean out the working space
 ```
