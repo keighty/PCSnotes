@@ -79,12 +79,28 @@ describe( "Spies on methods and libraries", function () {
     expect(mySpy.callCount).toEqual(3);
   });
 
-  it( "should watch calls to Math.random", function () {
+  it( "should intercept calls to Math.random", function () {
     spyOn(Math, 'random');
     var proxy = Math.random();
 
-    expect(Math.random).toHaveBeenCalled;
+    // the spy tells us if the call happened
+    expect(Math.random).toHaveBeenCalled();
+
+    //but proxy should still be undefined because the spy intercepted the call
+    expect(proxy).toBeUndefined();
+
   });
+  it( "should pass-through calls to Math.random", function () {
+    var mySpy = spyOn(Math, 'random');
+    // if we redo the spy using andCallThrough()...
+    mySpy.andCallThrough();
+    proxy = Math.random();
+    // we expect the proxy to have received a number
+    expect(proxy).toBeDefined();
+    expect(proxy).toBeGreaterThan(0);
+
+  });
+
 });
 
 describe( "Stubbing with sinon", function () {
