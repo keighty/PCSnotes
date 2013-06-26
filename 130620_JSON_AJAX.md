@@ -1,9 +1,3 @@
-************************************
-author: Katie Leonard
-date : 20 June 2013
-
-**********************************
-
 ##JSON
 * JavaScript object notation
 * avoid hand editing JSON files

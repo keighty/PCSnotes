@@ -1,9 +1,3 @@
-************************************
-author: Katie Leonard
-date : 19 June 2013
-
-**********************************
-
 wow.. jquery
 
 how to add an element to a page:

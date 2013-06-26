@@ -84,3 +84,12 @@ makeArray.apply( gasGuzzler, [ 'one', 'two' ] );
 makeArray.call( gasGuzzler,  'one', 'two' );
 // => [ gasGuzzler, 'one' , 'two' ]
 ```
+
+------------------------
+#jQuery plugins
+
+A jQuery plugin is simply a new method that we use to extend jQuery's
+ prototype object. By extending the prototype object you enable all
+ jQuery objects to inherit any methods that you add. As established,
+ whenever you call jQuery() you're creating a new jQuery object, with
+ all of jQuery's methods inherited.

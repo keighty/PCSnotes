@@ -1,7 +1,4 @@
-************************************
-author: Katie Leonard
-date : 24 June 2013
-**********************************
+# javascript Classes
 
 ```indexOf``` always returns a number so there’s no need to use !==. If you
  want to save bytes, you could use ~'foo'.indexOf('oo') which returns a

@@ -1,4 +1,4 @@
-#JavaScript
+#JavaScript Spies, Mocks, and Stubs
 
 * based on ECMAScript
 * invented by Netscape!
