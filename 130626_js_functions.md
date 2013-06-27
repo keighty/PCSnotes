@@ -63,7 +63,16 @@ var assert = Function("message", "expr",
   "assert.count++; return true;");
 assert.count = 0;
 ```
---------------------------------
+
+##5. Immediately Invoked Function Expression
+An immediately-invoked function expression (or IIFE, pronounced "iffy") is a JavaScript design pattern which produces a lexical scope using JavaScript's function scoping. Immediately-invoked function expressions can be used to avoid variable hoisting from within blocks, protect against polluting the global environment and simultaneously allow public access to methods while retaining privacy for variables defined within the function.
+```java
+(function($){
+  /* code */
+}(jquery));
+```
+
+
 # Calling Functions
 1. Directly, using parentheses
 ```java
