@@ -20,7 +20,6 @@ task :post do
   puts "Creating new post: #{filename}"
   open(filename, 'w') do |post|
     post.puts "# #{title.gsub(/-/,' ').capitalize}"
-    post.puts "---"
   end
 end # task :post
 
