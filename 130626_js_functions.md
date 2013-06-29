@@ -54,9 +54,10 @@ var assert = function assert(message, expr) {
 assert.count = 0;
 ```
 
-##4. Function Constructor
+##4. Function Constructor (note the capital 'F')
 * can be used to create new functions: `Function(p1, p2, ...., pn, body);`
 * can be used in a `new` expression: `new Function(p1...);`
+* useful for when the function body needs to be dynamically compiled
 ```java
 var assert = Function("message", "expr",
   "if (!expr) { throw new Error(message); }" +
