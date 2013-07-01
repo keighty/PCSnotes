@@ -86,3 +86,36 @@ class StaticPagesController < ApplicationController
   end
 end
 ```
+When visiting the URI /static_pages/home, rails looks at the StaticPages controller and executes the code in the home action, and then renders the view corresponding to the action.
+
+The view corresponding to this controller is found in /views/static_pages/home.html.erb
+
+# Generate RSpec tests
+```
+$ rails generate integration_test static_pages
+      invoke  rspec
+      create    spec/requests/static_pages_spec.rb
+```
+### Add some tests
+```ruby
+require 'spec_helper'
+
+describe "Static Home page" do
+  it "should have the content StaticPages#home" do
+    visit '/static_pages/home'
+    page.should have_content('StaticPages#home')
+  end
+end
+```
+### Get Capybara tests to work
+Have to include capybara in spec_helper.rb:
+```ruby
+RSpec.configure do |config|
+  config.include Capybara::DSL
+  ...
+end
+```
+### Run tests
+```
+$ bundle exec rspec spec/requests/static_pages_spec.rb
+```
