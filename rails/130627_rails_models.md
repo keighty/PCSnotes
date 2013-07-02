@@ -1,4 +1,19 @@
 # Rails models
+Model names are singular (ie: User).  A model represents a single user, whereas a database table consists of many users.
+
+###Model creation
+Create a migration with
+```bash
+$ rails generate model User name:string email:string
+      invoke  active_record
+      create    db/migrate/[timestamp]_create_users.rb
+      create    app/models/user.rb
+      invoke    rspec
+      create      spec/models/user_spec.rb
+$ tree db/migrate/
+db/migrate/
+└── 20130702222747_create_users.rb
+```
 
 ###Data Model Validation
 place the following lines int he Micropost model to restrict the length of the micropost:
