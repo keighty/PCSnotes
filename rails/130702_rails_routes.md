@@ -18,4 +18,10 @@ for `root_path` add `root to: 'static_pages#home'
 
 navigate to [localhost:3000/](localhost:3000/) to view the new mappings.
 
+###Note
+Rails routes read top to bottom, so don't use wildcards in routes
+```ruby
+match '/*'
+```
+
 

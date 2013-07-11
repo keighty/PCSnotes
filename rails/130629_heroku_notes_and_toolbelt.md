@@ -16,3 +16,4 @@ $ heroku create
 $ git push heroku master
 $ heroku open
 ```
+`heroku config -s` shows environment vars
