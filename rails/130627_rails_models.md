@@ -56,9 +56,7 @@ class User < ActiveRecord::Base
   before_save { self.email = email.downcase }
 ...
 ```
-
-
-Place the following lines int he Micropost model to restrict the length of the micropost:
+Place the following lines in the Micropost model to restrict the length of the micropost:
 ```ruby
 class Micropost < ActiveRecord::Base
   validates :content, :length => { :maximum => 140 }
@@ -82,3 +80,21 @@ class Micropost < ActiveRecord::Base
   validates :content, :length => { :maximum => 140 }
 end
 ```
+
+### Creating multi-key index
+```ruby
+class CreateMicroposts < ActiveRecord::Migration
+  def change
+    create_table :microposts do |t|
+      t.string :content
+      t.integer :user_id
+
+      t.timestamps
+    end
+    add_index :microposts, [:user_id, :created_at]
+  end
+end
+```
+`[:user_id, :created_at]` tells rails to use both keys at the same time
+
+`created_at` and `updated_at` are “magic” columns, automatically set to the proper creation and update timestamps, so any explicit initialization values are overwritten by the magic.
