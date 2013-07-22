@@ -11,3 +11,5 @@
 `$ rails generate migration add_password_digest_to_users password_digest:string`
 `$ bundle exec rake db:reset`
 `$ bundle exec rake db:test:prepare`
+
+`$rails new myApp -T` generates rails app with no test unit
