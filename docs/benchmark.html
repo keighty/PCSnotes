@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>benchmark.rb</title>
+  <title>Benchmark - UnionFind</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -10,20 +10,20 @@
 <body>
   <div id="container">
     <div id="background"></div>
-    
+
     <ul class="sections">
-        
+
           <li id="title">
               <div class="annotation">
-                  <h1>benchmark.rb</h1>
+                  <h1>Benchmarking Union Find Algorithms</h1>
               </div>
           </li>
-        
-        
-        
+
+
+
         <li id="section-1">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
@@ -31,35 +31,35 @@
 <p>So far, I have implemented three UnionFind algorithms, a quick-find, a quick-union, and a weighted quick-union. I am using benchmark in order to compare the efficiency of each algorithm.</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre><span class="keyword">require</span> <span class="string">'benchmark'</span>
 
 <span class="variable">$LOAD_PATH</span>.unshift(<span class="constant">File</span>.dirname(__FILE_<span class="number">_</span>))
 <span class="keyword">require</span> <span class="string">'quickfind'</span>
 <span class="keyword">require</span> <span class="string">'quickunion'</span>
 <span class="keyword">require</span> <span class="string">'weightedquickunion'</span></pre></div></div>
-            
+
         </li>
-        
-        
+
+
         <li id="section-2">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
               <p>Since I am running benchmark from the command line, I need to ensure that my user specifies an integer for the dataset size. Not only am I checking that an argument is provided, but I am also checking to make sure it doesn&#39;t contain any non-digits:</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre><span class="keyword">if</span> <span class="constant">ARGV</span>.empty? || (<span class="constant">ARGV</span>[<span class="number">0</span>].match /\<span class="constant">D</span>/)</pre></div></div>
-            
+
         </li>
-        
-        
+
+
         <li id="section-3">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
@@ -71,7 +71,7 @@
     ruby benchmark.rb &lt;array_size&gt;</code></pre>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre>  <span class="constant">STDOUT</span>.puts &lt;&lt;-<span class="constant">EOF</span>
     <span class="constant">Please</span> provide an integer to initialize the dataset.
 
@@ -80,69 +80,69 @@
   <span class="constant">EOF</span>
   exit
 <span class="keyword">else</span></pre></div></div>
-            
+
         </li>
-        
-        
+
+
         <li id="section-4">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>If a command line argument has been provided, make it an integer and assign it.</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre>  <span class="variable">@size</span> = <span class="constant">ARGV</span>[<span class="number">0</span>].to_i
 <span class="keyword">end</span></pre></div></div>
-            
+
         </li>
-        
-        
+
+
         <li id="section-5">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>testUnit() calls alternating union() and find() commands between random numbers. It takes a UnionFind object that has been initialized to the specified size:</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre><span class="function"><span class="keyword">def</span> <span class="title">testUnit</span><span class="params">(object)</span></span>
   <span class="variable">@size</span>.times <span class="keyword">do</span>
     object.union(rand(<span class="variable">@size</span>), rand(<span class="variable">@size</span>))
     object.find(rand(<span class="variable">@size</span>), rand(<span class="variable">@size</span>))
   <span class="keyword">end</span>
 <span class="keyword">end</span></pre></div></div>
-            
+
         </li>
-        
-        
+
+
         <li id="section-6">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Benchmark reports the time required for a particular trial in a neatly formatted table. In this case, I am outputting the size of size of the array and reporting on the three UnionFind implementations I am interested in testing.</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre><span class="constant">Benchmark</span>.bmbm() <span class="keyword">do</span> |x|
   puts <span class="string">"Array Size: <span class="subst">#{<span class="variable">@size</span>}</span>"</span>
   x.report(<span class="string">"QuickFind:"</span>)          { testUnit(<span class="constant">QuickFind</span>.new(<span class="variable">@size</span>)) }
   x.report(<span class="string">"QuickUnion:"</span>)         { testUnit(<span class="constant">QuickUnion</span>.new(<span class="variable">@size</span>)) }
   x.report(<span class="string">"WeightedQuickUnion:"</span>) { testUnit(<span class="constant">WeightedQuickUnion</span>.new(<span class="variable">@size</span>)) }
 <span class="keyword">end</span></pre></div></div>
-            
+
         </li>
-        
-        
+
+
         <li id="section-7">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
@@ -162,9 +162,9 @@ QuickUnion:           0.010000   0.000000   0.010000 (  0.006653)
 WeightedQuickUnion:   0.000000   0.000000   0.000000 (  0.007388)</code></pre>
 
             </div>
-            
+
         </li>
-        
+
     </ul>
   </div>
 </body>
