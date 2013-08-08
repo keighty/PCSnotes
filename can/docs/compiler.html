@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>compiler.rb</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bracket_lexer.html">
+                bracket_lexer.rb
+              </a>
+            
+              
+              <a class="source" href="compiler.html">
+                compiler.rb
+              </a>
+            
+              
+              <a class="source" href="compiler_test.html">
+                compiler_test.rb
+              </a>
+            
+              
+              <a class="source" href="lexer.html">
+                lexer.rb
+              </a>
+            
+              
+              <a class="source" href="lexer_test.html">
+                lexer_test.rb
+              </a>
+            
+              
+              <a class="source" href="nodes.html">
+                nodes.rb
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.rb
+              </a>
+            
+              
+              <a class="source" href="parser_test.html">
+                parser_test.rb
+              </a>
+            
+              
+              <a class="source" href="runtime.html">
+                runtime.rb
+              </a>
+            
+              
+              <a class="source" href="runtime_test.html">
+                runtime_test.rb
+              </a>
+            
+              
+              <a class="source" href="test_helper.html">
+                test_helper.rb
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>compiler.rb</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="keyword">require</span> <span class="string">"rubygems"</span>
+<span class="keyword">require</span> <span class="string">"llvm"</span>
+<span class="keyword">require</span> <span class="string">"parser"</span>
+<span class="keyword">require</span> <span class="string">"nodes"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Compiler is used in a similar way as the runtime. But, instead of executing code, it
+will generate LLVM byte-code for later execution.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">Compiler</span></span>
+  <span class="keyword">include</span> <span class="constant">LLVM</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Initialize LLVM types</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="constant">PCHAR</span> = <span class="constant">Type</span>.pointer(<span class="constant">Type::Int8Ty</span>) <span class="comment"># equivalent to *char in C</span>
+  <span class="constant">INT</span>   = <span class="constant">Type::Int32Ty</span> <span class="comment"># equivalent to int in C</span>
+  
+  attr_reader <span class="symbol">:locals</span>
+  
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(mod=<span class="keyword">nil</span>, function=<span class="keyword">nil</span>)</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Create the LLVM module in which to store the code</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="variable">@module</span> = mod || <span class="constant">LLVM::Module</span>.new(<span class="string">"awesome"</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>To track local names during compilation</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="variable">@locals</span> = {}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Function in which the code will be put</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="variable">@function</span> = function ||</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>By default we create a main function as it&#39;s the standard entry point</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="variable">@module</span>.get_or_insert_function(<span class="string">"main"</span>,
+                  <span class="constant">Type</span>.function(<span class="constant">INT</span>, [<span class="constant">INT</span>, <span class="constant">Type</span>.pointer(<span class="constant">PCHAR</span>)]))</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Create an LLVM byte-code builder</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="variable">@entry_block</span> = <span class="variable">@function</span>.create_block.builder
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Initial header to initialize the module.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">preamble</span></span>
+    define_external_functions
+  <span class="keyword">end</span>
+  
+  <span class="function"><span class="keyword">def</span> <span class="title">finish</span></span>
+    <span class="variable">@entry_block</span>.<span class="keyword">return</span>(<span class="number">0</span>.llvm)
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Create a new string.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">new_string</span><span class="params">(value)</span></span>
+    <span class="variable">@entry_block</span>.create_global_string_ptr(value)
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Create a new number.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">new_number</span><span class="params">(value)</span></span>
+    value.llvm
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Call a function.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">call</span><span class="params">(func, args=[])</span></span>
+    f = <span class="variable">@module</span>.get_function(func)
+    <span class="variable">@entry_block</span>.call(f, *args)
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Assign a local variable</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">assign</span><span class="params">(name, value)</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Allocate the memory and returns a pointer to it</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ptr = <span class="variable">@entry_block</span>.alloca(value_type(value), <span class="number">0</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Store the value insite the pointer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="variable">@entry_block</span>.store(value, ptr)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Keep track of the pointer so the compiler can find it back name later.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="variable">@locals</span>[name] = ptr
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Load the value of a local variable.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">load</span><span class="params">(name)</span></span>
+    <span class="variable">@entry_block</span>.load(<span class="variable">@locals</span>[name])
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Defines a function.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">(name)</span></span>
+    func = <span class="variable">@module</span>.get_or_insert_function(name, <span class="constant">Type</span>.function(<span class="constant">INT</span>, []))
+    generator = <span class="constant">Compiler</span>.new(<span class="variable">@module</span>, func)
+    <span class="keyword">yield</span> generator
+    generator.finish
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Optimize the generated LLVM byte-code.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">optimize</span></span>
+    <span class="constant">PassManager</span>.new.run(<span class="variable">@module</span>)
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>JIT compile and run the LLVM byte-code.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">run</span></span>
+    <span class="constant">ExecutionEngine</span>.get(<span class="variable">@module</span>)
+    <span class="constant">ExecutionEngine</span>.run_function(<span class="variable">@function</span>, <span class="number">0</span>.llvm, <span class="number">0</span>.llvm)
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Write the LLVM byte-code to a file.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">to_file</span><span class="params">(file)</span></span>
+    <span class="variable">@module</span>.write_bitcode(file)
+  <span class="keyword">end</span>
+  
+  <span class="function"><span class="keyword">def</span> <span class="title">inspect</span></span>
+    <span class="variable">@module</span>.inspect
+  <span class="keyword">end</span>
+  
+  private
+    <span class="function"><span class="keyword">def</span> <span class="title">define_external_functions</span></span>
+      <span class="variable">@module</span>.external_function(<span class="string">"printf"</span>, <span class="constant">Type</span>.function(<span class="constant">INT</span>, [<span class="constant">PCHAR</span>], <span class="keyword">true</span>))
+      <span class="variable">@module</span>.external_function(<span class="string">"puts"</span>, <span class="constant">Type</span>.function(<span class="constant">INT</span>, [<span class="constant">PCHAR</span>]))
+      <span class="variable">@module</span>.external_function(<span class="string">"read"</span>, <span class="constant">Type</span>.function(<span class="constant">INT</span>, [<span class="constant">INT</span>, <span class="constant">PCHAR</span>, <span class="constant">INT</span>]))
+      <span class="variable">@module</span>.external_function(<span class="string">"exit"</span>, <span class="constant">Type</span>.function(<span class="constant">INT</span>, [<span class="constant">INT</span>]))
+    <span class="keyword">end</span>
+    
+    <span class="constant">TYPE_MAPPING</span> = { <span class="number">11</span> =&gt; <span class="constant">PCHAR</span>, <span class="number">7</span> =&gt; <span class="constant">INT</span> }
+    <span class="function"><span class="keyword">def</span> <span class="title">value_type</span><span class="params">(value)</span></span>
+      <span class="constant">TYPE_MAPPING</span>[value.type.type_id]
+    <span class="keyword">end</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Reopen class supported by the compiler to implement how each node is compiled
+(compile method).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">Nodes</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">compile</span><span class="params">(compiler)</span></span>
+    <span class="variable">@nodes</span>.map { |node| node.compile(compiler) }.last
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">LiteralNode</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">compile</span><span class="params">(compiler)</span></span>
+    <span class="keyword">case</span> <span class="variable">@value</span>
+    <span class="keyword">when</span> <span class="constant">Numeric</span>
+      compiler.new_number(<span class="variable">@value</span>)
+    <span class="keyword">when</span> <span class="constant">String</span>
+      compiler.new_string(<span class="variable">@value</span>)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">CallNode</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">compile</span><span class="params">(compiler)</span></span>
+    raise <span class="string">"Receiver not supported for compilation"</span> <span class="keyword">if</span> <span class="variable">@receiver</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Local variable access</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> <span class="variable">@receiver</span>.<span class="keyword">nil</span>? &amp;&amp; <span class="variable">@arguments</span>.empty? &amp;&amp; compiler.locals[<span class="variable">@method</span>]
+      compiler.load(<span class="variable">@method</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Method call</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">else</span>
+      arguments = <span class="variable">@arguments</span>.map { |arg| arg.compile(compiler) }
+      compiler.call(<span class="variable">@method</span>, arguments)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">SetLocalNode</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">compile</span><span class="params">(compiler)</span></span>
+    compiler.assign(<span class="variable">@name</span>, <span class="variable">@value</span>.compile(compiler))
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">DefNode</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">compile</span><span class="params">(compiler)</span></span>
+    raise <span class="string">"Parameters not supported for compilation"</span> <span class="keyword">if</span> !<span class="variable">@params</span>.empty?
+    compiler.function(<span class="variable">@name</span>) <span class="keyword">do</span> |function|
+      <span class="variable">@body</span>.compile(function)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

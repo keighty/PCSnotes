@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>lexer.rb</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bracket_lexer.html">
+                bracket_lexer.rb
+              </a>
+            
+              
+              <a class="source" href="compiler.html">
+                compiler.rb
+              </a>
+            
+              
+              <a class="source" href="compiler_test.html">
+                compiler_test.rb
+              </a>
+            
+              
+              <a class="source" href="lexer.html">
+                lexer.rb
+              </a>
+            
+              
+              <a class="source" href="lexer_test.html">
+                lexer_test.rb
+              </a>
+            
+              
+              <a class="source" href="nodes.html">
+                nodes.rb
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.rb
+              </a>
+            
+              
+              <a class="source" href="parser_test.html">
+                parser_test.rb
+              </a>
+            
+              
+              <a class="source" href="runtime.html">
+                runtime.rb
+              </a>
+            
+              
+              <a class="source" href="runtime_test.html">
+                runtime_test.rb
+              </a>
+            
+              
+              <a class="source" href="test_helper.html">
+                test_helper.rb
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>lexer.rb</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">Lexer</span></span>
+  <span class="constant">KEYWORDS</span> = [<span class="string">"def"</span>, <span class="string">"class"</span>, <span class="string">"if"</span>, <span class="string">"else"</span>, <span class="string">"true"</span>, <span class="string">"false"</span>, <span class="string">"nil"</span>]
+
+  <span class="function"><span class="keyword">def</span> <span class="title">tokenize</span><span class="params">(code)</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Cleanup code by remove extra line breaks</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    code.chomp!</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Current character position we&#39;re parsing</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    i = <span class="number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Collection of all parsed tokens in the form [:TOKEN_TYPE, value]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    tokens = []</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Current indent level is the number of spaces in the last indent.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    current_indent = <span class="number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>We keep track of the indentation levels we are in so that when we dedent, we can 
+check if we&#39;re on the correct level.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    indent_stack = []</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>This is how to implement a very simple scanner.
+Scan one caracter at the time until you find something to parse.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">while</span> i &lt; code.size
+      chunk = code[i..-<span class="number">1</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Matching standard tokens.</p>
+<p>Matching if, print, method names, etc.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> identifier = chunk[<span class="regexp">/\A([a-z]\w*)/</span>, <span class="number">1</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Keywords are special identifiers tagged with their own name, &#39;if&#39; will result
+in an [:IF, &quot;if&quot;] token</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> <span class="constant">KEYWORDS</span>.<span class="keyword">include</span>?(identifier)
+          tokens &lt;&lt; [identifier.upcase.to_sym, identifier]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Non-keyword identifiers include method and variable names.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">else</span>
+          tokens &lt;&lt; [<span class="symbol">:IDENTIFIER</span>, identifier]
+        <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>skip what we just parsed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        i += identifier.size</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Matching class names and constants starting with a capital letter.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">elsif</span> constant = chunk[<span class="regexp">/\A([A-Z]\w*)/</span>, <span class="number">1</span>]
+        tokens &lt;&lt; [<span class="symbol">:CONSTANT</span>, constant]
+        i += constant.size
+        
+      <span class="keyword">elsif</span> number = chunk[<span class="regexp">/\A([0-9]+)/</span>, <span class="number">1</span>]
+        tokens &lt;&lt; [<span class="symbol">:NUMBER</span>, number.to_i]
+        i += number.size
+        
+      <span class="keyword">elsif</span> string = chunk[<span class="regexp">/\A"(.*?)"/</span>, <span class="number">1</span>]
+        tokens &lt;&lt; [<span class="symbol">:STRING</span>, string]
+        i += string.size + <span class="number">2</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Here&#39;s the indentation magic!</p>
+<p>We have to take care of 3 cases:</p>
+<p>  if true:  # 1) the block is created
+    line 1
+    line 2  # 2) new line inside a block
+  continue  # 3) dedent</p>
+<p>This elsif takes care of the first case. The number of spaces will determine 
+the indent level.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">elsif</span> indent = chunk[<span class="regexp">/\A\:\n( +)/m</span>, <span class="number">1</span>] <span class="comment"># Matches ": &lt;newline&gt; &lt;spaces&gt;"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>When we create a new block we expect the indent level to go up.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> indent.size &lt;= current_indent
+          raise <span class="string">"Bad indent level, got <span class="subst">#{indent.size}</span> indents, "</span> +
+                <span class="string">"expected &gt; <span class="subst">#{current_indent}</span>"</span>
+        <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Adjust the current indentation level.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        current_indent = indent.size
+        indent_stack.push(current_indent)
+        tokens &lt;&lt; [<span class="symbol">:INDENT</span>, indent.size]
+        i += indent.size + <span class="number">2</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>This elsif takes care of the two last cases:
+Case 2: We stay in the same block if the indent level (number of spaces) is the
+        same as current_indent.
+Case 3: Close the current block, if indent level is lower than current_indent.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">elsif</span> indent = chunk[<span class="regexp">/\A\n( *)/m</span>, <span class="number">1</span>] <span class="comment"># Matches "&lt;newline&gt; &lt;spaces&gt;"</span>
+        <span class="keyword">if</span> indent.size == current_indent <span class="comment"># Case 2</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Nothing to do, we&#39;re still in the same block</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          tokens &lt;&lt; [<span class="symbol">:NEWLINE</span>, <span class="string">"\n"</span>]
+        <span class="keyword">elsif</span> indent.size &lt; current_indent <span class="comment"># Case 3</span>
+          indent_stack.pop
+          current_indent = indent_stack.first || <span class="number">0</span>
+          tokens &lt;&lt; [<span class="symbol">:DEDENT</span>, indent.size]
+          tokens &lt;&lt; [<span class="symbol">:NEWLINE</span>, <span class="string">"\n"</span>]
+        <span class="keyword">else</span> <span class="comment"># indent.size &gt; current_indent, error!</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Cannot increase indent level without using &quot;:&quot;, so this is an error.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          raise <span class="string">"Missing ':'"</span>
+        <span class="keyword">end</span>
+        i += indent.size + <span class="number">1</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Ignore whitespace</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">elsif</span> chunk.match(<span class="regexp">/\A /</span>)
+        i += <span class="number">1</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>We treat all other single characters as a token. Eg.: ( ) , . !</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">else</span>
+        value = chunk[<span class="number">0</span>,<span class="number">1</span>]
+        tokens &lt;&lt; [value, value]
+        i += <span class="number">1</span>
+        
+      <span class="keyword">end</span>
+      
+    <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Close all open blocks</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">while</span> indent = indent_stack.pop
+      tokens &lt;&lt; [<span class="symbol">:DEDENT</span>, indent_stack.first || <span class="number">0</span>]
+    <span class="keyword">end</span>
+    
+    tokens
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

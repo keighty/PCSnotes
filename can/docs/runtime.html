@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>runtime.rb</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bracket_lexer.html">
+                bracket_lexer.rb
+              </a>
+            
+              
+              <a class="source" href="compiler.html">
+                compiler.rb
+              </a>
+            
+              
+              <a class="source" href="compiler_test.html">
+                compiler_test.rb
+              </a>
+            
+              
+              <a class="source" href="lexer.html">
+                lexer.rb
+              </a>
+            
+              
+              <a class="source" href="lexer_test.html">
+                lexer_test.rb
+              </a>
+            
+              
+              <a class="source" href="nodes.html">
+                nodes.rb
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.rb
+              </a>
+            
+              
+              <a class="source" href="parser_test.html">
+                parser_test.rb
+              </a>
+            
+              
+              <a class="source" href="runtime.html">
+                runtime.rb
+              </a>
+            
+              
+              <a class="source" href="runtime_test.html">
+                runtime_test.rb
+              </a>
+            
+              
+              <a class="source" href="test_helper.html">
+                test_helper.rb
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>runtime.rb</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Represents an Awesome object instance in the Ruby world.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">AwesomeObject</span></span>
+  attr_accessor <span class="symbol">:awesome_class</span>, <span class="symbol">:ruby_value</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Each object have a class (named awesome_class to prevent errors with Ruby&#39;s class
+method). Optionaly an object can hold a Ruby value (eg.: numbers and strings).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(awesome_class, ruby_value=<span class="keyword">self</span>)</span></span>
+    <span class="variable">@awesome_class</span> = awesome_class
+    <span class="variable">@ruby_value</span> = ruby_value
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Call a method on the object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">call</span><span class="params">(method, arguments)</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Like a typical Class-based runtime model, we store methods in the class of the
+object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="variable">@awesome_class</span>.lookup(method).call(<span class="keyword">self</span>, arguments)
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Represents a Awesome class in the Ruby world. Classes are objects in Awesome so they
+inherit from AwesomeObject.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">AwesomeClass</span> <span class="inheritance">&lt; <span class="parent">AwesomeObject</span></span></span>
+  attr_reader <span class="symbol">:awesome_methods</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Creates a new class. Number is an instance of Class for example.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span></span>
+    <span class="variable">@awesome_methods</span> = {}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Check if we&#39;re bootstrapping (launching the runtime). During this process the 
+runtime is not fully initialized and core classes do not yet exists, so we defer 
+using those once the language is bootstrapped.
+This solves the chicken-or-the-egg problem with the Class class. We can 
+initialize Class then set Class.class = Class.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> <span class="keyword">defined</span>?(<span class="constant">Runtime</span>)
+      awesome_class = <span class="constant">Runtime</span>[<span class="string">"Class"</span>]
+    <span class="keyword">else</span>
+      awesome_class = <span class="keyword">nil</span>
+    <span class="keyword">end</span>
+    
+    <span class="keyword">super</span>(awesome_class)
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Lookup a method</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">lookup</span><span class="params">(method_name)</span></span>
+    method = <span class="variable">@awesome_methods</span>[method_name]
+    <span class="keyword">unless</span> method
+      raise <span class="string">"Method not found: <span class="subst">#{method_name}</span>"</span>
+    <span class="keyword">end</span>
+    method
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Create a new instance of this Awesome class</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">new</span></span>
+    <span class="constant">AwesomeObject</span>.new(<span class="keyword">self</span>)
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Create an instance of this Awesome class that holds a Ruby value. Like a String, 
+Number or true.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">new_value</span><span class="params">(value)</span></span>
+    <span class="constant">AwesomeObject</span>.new(<span class="keyword">self</span>, value)
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Represents a method defined in the Awesome world. We can use Ruby&#39;s Proc to define a 
+method in Ruby world. You&#39;ll see more about defining awesome methods in Ruby at the 
+end of this file, during the bootstrapping process.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">AwesomeMethod</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(params, body)</span></span>
+    <span class="variable">@params</span> = params
+    <span class="variable">@body</span> = body
+  <span class="keyword">end</span>
+  
+  <span class="function"><span class="keyword">def</span> <span class="title">call</span><span class="params">(receiver, arguments)</span></span>
+    <span class="variable">@body</span>.eval(<span class="constant">Context</span>.new(receiver))
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Represents the evaluation context, that tracks values that change depending on where 
+the code is evaluated.
+- &quot;locals&quot; holds local variables.
+- &quot;current_self&quot; is the object on which methods with no receivers are called,
+  eg.: print is like current_self.print
+- &quot;current_class&quot; is the class on which methods are defined with the &quot;def&quot; keyword.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">Context</span></span>
+  attr_reader <span class="symbol">:locals</span>, <span class="symbol">:current_self</span>, <span class="symbol">:current_class</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>We store constants as class variable (class variables start with @@ and instance
+variables start with @ in Ruby) since they are globally accessible. If you want to
+implement namespacing of constants, you could store it in the instance of this 
+class.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="variable">@@constants</span> = {}
+  
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(current_self, current_class=current_self.awesome_class)</span></span>
+    <span class="variable">@locals</span> = {}
+    <span class="variable">@current_self</span> = current_self
+    <span class="variable">@current_class</span> = current_class
+  <span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Shortcuts to access constants, Runtime[...] instead of Runtime.constants[...]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="keyword">def</span> <span class="title">[]</span><span class="params">(name)</span></span>
+    <span class="variable">@@constants</span>[name]
+  <span class="keyword">end</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">[]=</span><span class="params">(name, value)</span></span>
+    <span class="variable">@@constants</span>[name] = value
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Bootstrap the runtime. This is where we assemble all the classes and objects together
+to form the runtime.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>awesome_class = <span class="constant">AwesomeClass</span>.new            <span class="comment"># Class is a class</span>
+awesome_class.awesome_class = awesome_class <span class="comment"># Class.class == Class</span>
+awesome_object_class = <span class="constant">AwesomeClass</span>.new     <span class="comment"># Object = Class.new</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Create the Runtime object (the root context) on which all code will start its
+evaluation.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="constant">Runtime</span> = <span class="constant">Context</span>.new(awesome_object_class.new)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Register the core classes as constants in the runtime so we can access them from 
+within a program.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="constant">Runtime</span>[<span class="string">"Class"</span>] = awesome_class
+<span class="constant">Runtime</span>[<span class="string">"Object"</span>] = awesome_object_class
+<span class="constant">Runtime</span>[<span class="string">"Number"</span>] = <span class="constant">AwesomeClass</span>.new
+<span class="constant">Runtime</span>[<span class="string">"String"</span>] = <span class="constant">AwesomeClass</span>.new
+<span class="constant">Runtime</span>[<span class="string">"TrueClass"</span>] = <span class="constant">AwesomeClass</span>.new
+<span class="constant">Runtime</span>[<span class="string">"FalseClass"</span>] = <span class="constant">AwesomeClass</span>.new
+<span class="constant">Runtime</span>[<span class="string">"NilClass"</span>] = <span class="constant">AwesomeClass</span>.new</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Register primitives that map to Ruby values</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="constant">Runtime</span>[<span class="string">"true"</span>] = <span class="constant">Runtime</span>[<span class="string">"TrueClass"</span>].new_value(<span class="keyword">true</span>)
+<span class="constant">Runtime</span>[<span class="string">"false"</span>] = <span class="constant">Runtime</span>[<span class="string">"FalseClass"</span>].new_value(<span class="keyword">false</span>)
+<span class="constant">Runtime</span>[<span class="string">"nil"</span>] = <span class="constant">Runtime</span>[<span class="string">"NilClass"</span>].new_value(<span class="keyword">nil</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Define some Awesome methods in Ruby. We can use a proc since they respond to &quot;call&quot;.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="constant">Runtime</span>[<span class="string">"Class"</span>].awesome_methods[<span class="string">"new"</span>] = proc <span class="keyword">do</span> |receiver, arguments|</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Creates a new instance of the class</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  receiver.new
+<span class="keyword">end</span>
+<span class="constant">Runtime</span>[<span class="string">"Object"</span>].awesome_methods[<span class="string">"print"</span>] = proc <span class="keyword">do</span> |receiver, arguments|
+  puts arguments.first.ruby_value
+  <span class="constant">Runtime</span>[<span class="string">"nil"</span>] <span class="comment"># Return value for Awesome</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

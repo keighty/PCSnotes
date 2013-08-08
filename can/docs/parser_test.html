@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>parser_test.rb</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bracket_lexer.html">
+                bracket_lexer.rb
+              </a>
+            
+              
+              <a class="source" href="compiler.html">
+                compiler.rb
+              </a>
+            
+              
+              <a class="source" href="compiler_test.html">
+                compiler_test.rb
+              </a>
+            
+              
+              <a class="source" href="lexer.html">
+                lexer.rb
+              </a>
+            
+              
+              <a class="source" href="lexer_test.html">
+                lexer_test.rb
+              </a>
+            
+              
+              <a class="source" href="nodes.html">
+                nodes.rb
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.rb
+              </a>
+            
+              
+              <a class="source" href="parser_test.html">
+                parser_test.rb
+              </a>
+            
+              
+              <a class="source" href="runtime.html">
+                runtime.rb
+              </a>
+            
+              
+              <a class="source" href="runtime_test.html">
+                runtime_test.rb
+              </a>
+            
+              
+              <a class="source" href="test_helper.html">
+                test_helper.rb
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>parser_test.rb</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>require_relative <span class="string">"test_helper"</span>
+
+code = &lt;&lt;-<span class="constant">EOS</span>
+<span class="class"><span class="keyword">class</span> <span class="title">Awesome</span>:</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(name)</span>:</span>
+    pass
+
+  <span class="function"><span class="keyword">def</span> <span class="title">x</span>:</span>
+    <span class="number">2</span>
+
+<span class="keyword">if</span> <span class="symbol">true:</span>
+  aw = <span class="constant">Awesome</span>.new(<span class="string">"brilliant!"</span>)
+<span class="symbol">else:</span>
+  weird
+<span class="constant">EOS</span>
+
+
+p <span class="constant">Parser</span>.new.parse(code)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Output:</p>
+<p><Nodes @nodes=[
+  <ClassNode @name="Awesome", @body=<Nodes @nodes=[
+    <Nodes @nodes=[
+      <Nodes @nodes=[
+        <DefNode @name="initialize", @params=["name"], @body=<Nodes @nodes=[
+          <CallNode @method="pass">
+        ]&gt;&gt;
+      ]&gt;,
+      <DefNode @name="x", @body=<Nodes @nodes=[
+        <LiteralNode @value=2>
+      ]&gt;&gt;
+    ]&gt;
+  ]&gt;&gt;,
+  <IfNode @condition=<LiteralNode @value=true>, @body=<Nodes @nodes=[
+    <SetLocalNode @name="aw",
+                  @value=<CallNode @method="new",
+                                   @arguments=[<LiteralNode @value="brilliant!">],
+                                   @receiver=<GetConstantNode @name="Awesome">&gt;&gt;
+  ]&gt;, @else_body=<Nodes @nodes=[
+    <CallNode @method="weird">
+  ]&gt;&gt;
+]&gt;</p>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

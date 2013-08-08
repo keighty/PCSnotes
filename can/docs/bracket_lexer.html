@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>bracket_lexer.rb</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bracket_lexer.html">
+                bracket_lexer.rb
+              </a>
+            
+              
+              <a class="source" href="compiler.html">
+                compiler.rb
+              </a>
+            
+              
+              <a class="source" href="compiler_test.html">
+                compiler_test.rb
+              </a>
+            
+              
+              <a class="source" href="lexer.html">
+                lexer.rb
+              </a>
+            
+              
+              <a class="source" href="lexer_test.html">
+                lexer_test.rb
+              </a>
+            
+              
+              <a class="source" href="nodes.html">
+                nodes.rb
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.rb
+              </a>
+            
+              
+              <a class="source" href="parser_test.html">
+                parser_test.rb
+              </a>
+            
+              
+              <a class="source" href="runtime.html">
+                runtime.rb
+              </a>
+            
+              
+              <a class="source" href="runtime_test.html">
+                runtime_test.rb
+              </a>
+            
+              
+              <a class="source" href="test_helper.html">
+                test_helper.rb
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>bracket_lexer.rb</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">BracketLexer</span></span>
+  <span class="constant">KEYWORDS</span> = [<span class="string">"def"</span>, <span class="string">"class"</span>, <span class="string">"if"</span>, <span class="string">"else"</span>, <span class="string">"true"</span>, <span class="string">"false"</span>, <span class="string">"nil"</span>]
+  
+  <span class="function"><span class="keyword">def</span> <span class="title">tokenize</span><span class="params">(code)</span></span>
+    code.chomp!
+    i = <span class="number">0</span>
+    tokens = []
+    current_indent = <span class="number">0</span>
+    indent_stack = []
+    
+    <span class="keyword">while</span> i &lt; code.size
+      chunk = code[i..-<span class="number">1</span>]
+
+      <span class="keyword">if</span> identifier = chunk[<span class="regexp">/\A([a-z]\w*)/</span>, <span class="number">1</span>]
+        <span class="keyword">if</span> <span class="constant">KEYWORDS</span>.<span class="keyword">include</span>?(identifier)
+          tokens &lt;&lt; [identifier.upcase.to_sym, identifier]
+        <span class="keyword">else</span>
+          tokens &lt;&lt; [<span class="symbol">:IDENTIFIER</span>, identifier]
+        <span class="keyword">end</span>
+        i += identifier.size
+      
+      <span class="keyword">elsif</span> constant = chunk[<span class="regexp">/\A([A-Z]\w*)/</span>, <span class="number">1</span>]
+        tokens &lt;&lt; [<span class="symbol">:CONSTANT</span>, constant]
+        i += constant.size
+        
+      <span class="keyword">elsif</span> number = chunk[<span class="regexp">/\A([0-9]+)/</span>, <span class="number">1</span>]
+        tokens &lt;&lt; [<span class="symbol">:NUMBER</span>, number.to_i]
+        i += number.size
+        
+      <span class="keyword">elsif</span> string = chunk[<span class="regexp">/\A"(.*?)"/</span>, <span class="number">1</span>]
+        tokens &lt;&lt; [<span class="symbol">:STRING</span>, string]
+        i += string.size + <span class="number">2</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h4>#</h4>
+<p>All indentation magic code was removed and only this elsif was added.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">elsif</span> chunk.match(<span class="regexp">/\A\n+/</span>)
+        tokens &lt;&lt; [<span class="symbol">:NEWLINE</span>, <span class="string">"\n"</span>]
+        i += <span class="number">1</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h4>#</h4>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      
+      <span class="keyword">elsif</span> chunk.match(<span class="regexp">/\A /</span>)
+        i += <span class="number">1</span>
+      
+      <span class="keyword">else</span>
+        value = chunk[<span class="number">0</span>,<span class="number">1</span>]
+        tokens &lt;&lt; [value, value]
+        i += <span class="number">1</span>
+        
+      <span class="keyword">end</span>
+      
+    <span class="keyword">end</span>
+    
+    tokens
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+code = &lt;&lt;-<span class="constant">EOS</span>
+<span class="keyword">if</span> <span class="number">1</span> {
+  print <span class="string">"..."</span>
+  <span class="keyword">if</span> <span class="keyword">false</span> {
+    pass
+  }
+  print <span class="string">"done!"</span>
+}
+print <span class="string">"The End"</span>
+<span class="constant">EOS</span>
+
+p <span class="constant">BracketLexer</span>.new.tokenize(code)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Output:
+[[:IF, &quot;if&quot;], [:NUMBER, 1], [&quot;{&quot;, &quot;{&quot;], [:NEWLINE, &quot;\n&quot;],
+   [:IDENTIFIER, &quot;print&quot;], [:STRING, &quot;...&quot;], [:NEWLINE, &quot;\n&quot;],
+   [:IF, &quot;if&quot;], [:FALSE, &quot;false&quot;], [&quot;{&quot;, &quot;{&quot;], [:NEWLINE, &quot;\n&quot;],
+     [:IDENTIFIER, &quot;pass&quot;], [:NEWLINE, &quot;\n&quot;],
+   [&quot;}&quot;, &quot;}&quot;], [:NEWLINE, &quot;\n&quot;],
+   [:IDENTIFIER, &quot;print&quot;], [:STRING, &quot;done!&quot;], [:NEWLINE, &quot;\n&quot;],
+ [&quot;}&quot;, &quot;}&quot;], [:NEWLINE, &quot;\n&quot;],
+ [:IDENTIFIER, &quot;print&quot;], [:STRING, &quot;The End&quot;]]</p>
+
+            </div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
